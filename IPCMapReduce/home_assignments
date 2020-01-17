@@ -1,0 +1,39 @@
+Subproject 1 runtime: 428353 microseconds, or .43 seconds 
+Subproject 2 runtime: 3843429 milliseconds, or 3.84 seconds
+
+Both projects were tested with the Anna Karenina text file using the search word "particular"
+
+I believe the subproject 1 runs much faster than subproject 2 because subproject 1 has much less overhead in parsing the information.
+I did not treat the text information as carefully in subproject 1 and immediatel return found words over the socket. 
+As such it runs faster as it does not parse the sentences in such a fine detail.
+Subproject 2 also has much higher overhead as it creates 4 threads.
+
+The different IPC methods provided by Linux are:
+1.) Pipes (unnamed and named FIFO):
+    Pipes pass information from one process to another with no notion of message boundaries. These can either be named, such as FIFO, and used without 
+    the processes needing to know information about another as it is stored in disk memory, or unnamed pipes, in which the processes must explicitely 
+    know they are sending information to one another (parent process and child process) as the pipe only exists in memory.
+
+2.) Message Queues:
+    A queue that exists in the kernal space. It is quite similar to a pipe in regards of sending information, however, message queues allow for 
+    sending chunks of data that can be retrieved outside of a FIFO order.
+
+3.) Unix Domain Socket:
+    The domain socket is a bi-directional way of passing data from one process to another. It combines both the Byte Streaming of pipes, and the datagram
+    aspect of message queues.
+
+4.) Shared Memory:
+    Shared memory exists in physical memory and is a chunk of memory that is reserved for all processes who access the memory space. It allows for easy
+    I/O operations as the user is left to decide I/O protocols. It does not require the kernal to process I/O for the user. This allows immediate 
+    modification and retrieval of information.
+
+Map-Reduce:
+    Map reduce is a method of computing that allows large data sets to be divided into smaller chunks and processed on either multiple computers or 
+    multiple processes. The first step of map-reduce is to map all the data needed into various processes or computers. These processes or computers will
+    then sort the data based on given criteria. Then, all of the data based on that criteria is then reduced into one process or computer as a result.
+    This allows big data to be processed in a much faster time frame as compared to having one computer alone complete the task.
+
+Hadoop:
+    Hadoop is popular as it provides a collenction of open-source software in order to allow map-reduce in a network of computers. This allows the 
+    map-reduce framework to be used on big data without the overhead of creating a program such as subproject 2. Instead, one could open the Hadoop
+    framework and immediately use the map-reduce framework without the need to develope their own map-reduce program.

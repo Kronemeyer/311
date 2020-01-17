@@ -1,0 +1,35 @@
+To use the programs, run the make file.
+'make' will create the shm_search program.
+'make uds_search' will make the unix domain socket program.
+
+To use the programs the syntax for your terminal is:
+uds_search name_of_text_file search_word
+shm_search name_of_text_file search_word
+
+Examples for both:
+uds_search test.txt word <- will use the unix domain socket search for "word" within the text file, test.txt.
+shm_search test.txt word <- will use the shared memory search for "word" within the text file, test.txt.
+
+NOTE: both searches are case sensitive, also apostrophe's will effect search as well. Bens and Ben's are considered different words.
+
+My design for subproject 1 was to simply send over the information in a given text file to the child process one sentence at a time.
+The data one the sockets is framed to ensure the correct amount of data is read in the child process every time.
+It then searches for the search word immediately and, if found, immediately returns the sentence it to the parent process.
+Once the parent receives the sentence it then places into a vector. The vector is then iterated upon to ensure leading quotes or capitalization do not affect sorting.
+Finally, the parent prints the vector to screen.
+
+My design for subproject 2 was more in depth. 
+First, a semaphore was created to share between the parent and child process, initialized to 0.
+Second, my parent process opens the file and uses the stat struct to determine file size. 
+Once the size has been determined, it opens a shared memory location and truncates it to the exact file size.
+The parent process then posts the semaphore, allowing the child process to read from the shared memory.
+The child process then reads from the shared memory and parses the characters into complete sentences then put into a vector stored into a struct.
+Once all the memory has been added to the struct vector, 4 threads are created using the struct as their argument parameters.
+The parameters of the struct give the threads their ID numbers, used for vector division (threadID%threadNumber), and the search word to search.
+The threads then search the vectors elements they are responsible for.
+Any elements in the vector that contain the word is then put into a secondary struct vector.
+A mutex is used to prevent the threads from a data race condition.
+Once the threads are finished, they join one another and are destroyed. 
+The child then returns the new struct vector to the shared memory.
+The parent then reads from the shared memory and, in the same fashion as the subproject 1, iterates through the vector to ensure proper sorting before printing them to screen.
+

@@ -1,0 +1,22 @@
+1a. What is /proc in Unix/Linux?
+	Proc is a filesystem that provides an interface to kernal data strucures using a pseudo-filesystem. 
+
+1b. What does cat /proc/$pid/maps and how does it relate to project 4?
+	This prints the information from the maps file that contains the currently mapped memory regions and their access permission. The device driver that would be written for subproject 2 would mount here.
+
+1c. Please enumerate 3 other functions that you like most.
+1. /proc/[pid]/fd:
+	A subdirectory containing an entry for each file the process has open. The files are identified by their file descriptors which is a soft link to the actual file. 
+2. /proc/[pid]/io
+	A file containing all the I/O statistics for the process. It contains information such as total number of char's read and written. It also stores the amount of system calls the process has made. Pretty neat actually.
+3. /proc/[pid]/pagemap
+	This shows the mapping of each of the process's virtual pages into physical page frames or swap area. 
+
+2. What is Loadable Kernel Module?
+	A loadable kernel module is code that can be used with running kernel. This code can be used to support additional hardware, file systems, and system calls. This allows extension of the kernel without requiring constant updates to the kernel source code.
+
+3a. Compare the three sets of API used in the first subproject. 
+	The first API, open, simply uses a raw I/O call to open the file and returns a file descriptor. It is a system call that returns a file descriptor. On the other hand, fopen is a library function that wraps the open system call and provides user functionality that can be beneficial to normal use. Instead of just returning a file descriptor it will return a FILE * (pointer to the file).
+
+3b. Compare file descriptor, File pointer, and file descriptor structure, and open file description.
+	A file descriptor is simply an integer that names the location of a file in memory. A file pointer, on the other hand, is a structure with type of FILE and provides additional functionality. 	
