@@ -1,0 +1,64 @@
+diff -urN linux-5.3.12-old/arch/x86/entry/syscalls/syscall_64.tbl linux-5.3.12-new/arch/x86/entry/syscalls/syscall_64.tbl
+--- linux-5.3.12-old/arch/x86/entry/syscalls/syscall_64.tbl	2019-11-20 10:49:17.000000000 -0500
++++ linux-5.3.12-new/arch/x86/entry/syscalls/syscall_64.tbl	2019-11-21 22:33:36.534138839 -0500
+@@ -357,6 +357,8 @@
+ 433	common	fspick			__x64_sys_fspick
+ 434	common	pidfd_open		__x64_sys_pidfd_open
+ 435	common	clone3			__x64_sys_clone3/ptregs
++436	common	pokeAddr		__x64_sys_pokeAddr
++437	common	helloWorld		__x64_sys_helloWorld
+ 
+ #
+ # x32-specific system call numbers start at 512 to avoid cache impact
+
+diff -urN linux-5.3.12-old/kernel/sys.c linux-5.3.12-new/kernel/sys.c
+--- linux-5.3.12-old/kernel/sys.c	2019-11-20 10:49:17.000000000 -0500
++++ linux-5.3.12-new/kernel/sys.c	2019-11-22 20:06:44.551764337 -0500
+@@ -2655,3 +2655,47 @@
+ 	return 0;
+ }
+ #endif /* CONFIG_COMPAT */
++
++#define FLAG_0 (1 << 0)
++#define FLAG_1 (1 << 1)
++#define FLAG_2 (1 << 2)
++#define FLAG_3 (1 << 3)
++
++SYSCALL_DEFINE1(pokeAddr, void *, p)
++{
++	unsigned long address = (unsigned long) p;
++	struct task_struct * tasks = get_current();
++	struct vm_area_struct * cur_area;
++	cur_area = tasks->mm->mmap;
++	unsigned long pgoffset = cur_area->vm_pgoff;
++	
++	
++	printk("Current Address: %ld\n",address);
++	while (cur_area->vm_next != NULL) {
++		if(address >= cur_area->vm_start && address < cur_area->vm_end) {
++			unsigned long temp = 0;
++			if ((pgoffset & FLAG_0) > 0) 
++				temp |= FLAG_0;
++			unsigned long flags = cur_area->vm_flags;
++			if ((flags & FLAG_0) > 0)
++				temp |= FLAG_1;
++			if ((flags & FLAG_1) > 0)
++				temp |= FLAG_2;
++			if ((flags & FLAG_2) > 0)
++				temp |= FLAG_3;
++			printk("Flags translated to: %lu\n",temp);
++			return temp;
++		} else {
++			cur_area = cur_area->vm_next;
++			printk("Not found, searching next VM_area");
++		}
++	} 
++	return 0;
++	
++}
++
++SYSCALL_DEFINE0(helloWorld)
++{
++	printk("Hello World");
++	return 0;
++}
